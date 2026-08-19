@@ -1,0 +1,98 @@
+[gd_scene format=3 uid="uid://c4l58hqd2ofyj"]
+
+[ext_resource type="PackedScene" uid="uid://dro7g0ssis4o2" path="res://Entities/Block.tscn" id="1_bnuu0"]
+[ext_resource type="Script" uid="uid://ceu66cttfpf2b" path="res://Views/game.gd" id="1_ia7b4"]
+[ext_resource type="PackedScene" uid="uid://epx22b3huk3f" path="res://Entities/player.tscn" id="2_cwp8b"]
+[ext_resource type="PackedScene" uid="uid://dlsb2qmfi4qa" path="res://Entities/Areas/start_area.tscn" id="3_788f6"]
+[ext_resource type="PackedScene" uid="uid://cljcrrxbpw8og" path="res://Entities/Areas/win_area.tscn" id="4_qloo4"]
+
+[node name="Game" type="Node2D" unique_id=434226425]
+script = ExtResource("1_ia7b4")
+block_scene = ExtResource("1_bnuu0")
+player_scene = ExtResource("2_cwp8b")
+
+[node name="StartArea" parent="." unique_id=1885905531 instance=ExtResource("3_788f6")]
+position = Vector2(32, 608)
+
+[node name="WinArea" parent="." unique_id=1614028803 instance=ExtResource("4_qloo4")]
+unique_name_in_owner = true
+position = Vector2(1120, 96)
+
+[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1699881676]
+_spawnable_scenes = PackedStringArray("uid://dro7g0ssis4o2")
+spawn_path = NodePath("BlockContainer")
+
+[node name="BlockContainer" type="Node2D" parent="MultiplayerSpawner" unique_id=1050074107]
+unique_name_in_owner = true
+
+[node name="MultiplayerSpawner2" type="MultiplayerSpawner" parent="." unique_id=1288297021]
+_spawnable_scenes = PackedStringArray("uid://epx22b3huk3f")
+spawn_path = NodePath("PlayerContainer")
+
+[node name="PlayerContainer" type="Node2D" parent="MultiplayerSpawner2" unique_id=418240832]
+unique_name_in_owner = true
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=262710401]
+
+[node name="GameOverScreen" type="Control" parent="CanvasLayer" unique_id=1725471662]
+unique_name_in_owner = true
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/GameOverScreen" unique_id=1656186357]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 200
+theme_override_constants/margin_top = 200
+theme_override_constants/margin_right = 200
+theme_override_constants/margin_bottom = 200
+
+[node name="Panel" type="Panel" parent="CanvasLayer/GameOverScreen/MarginContainer" unique_id=1913845739]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GameOverScreen" unique_id=1915301133]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="WinnerTextLabel" type="Label" parent="CanvasLayer/GameOverScreen/VBoxContainer" unique_id=365558158]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 57
+text = "PELAAJA 1 VOITTI!"
+
+[node name="HSeparator" type="HSeparator" parent="CanvasLayer/GameOverScreen/VBoxContainer" unique_id=1398093331]
+layout_mode = 2
+
+[node name="ReadyButton" type="Button" parent="CanvasLayer/GameOverScreen/VBoxContainer" unique_id=1120797997]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+size_flags_horizontal = 4
+text = "READY"
+
+[node name="ReadyCheckBox" type="CheckBox" parent="CanvasLayer/GameOverScreen/VBoxContainer" unique_id=1745430538]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+
+[connection signal="pressed" from="CanvasLayer/GameOverScreen/VBoxContainer/ReadyButton" to="." method="_on_ready_button_pressed"]

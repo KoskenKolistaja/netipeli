@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://dlsb2qmfi4qa"]
+
+[ext_resource type="PackedScene" uid="uid://dro7g0ssis4o2" path="res://Entities/Block.tscn" id="1_xil7t"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_faqii"]
+size = Vector2(64, 64)
+
+[node name="StartArea" type="Area2D" unique_id=1885905531]
+
+[node name="Block" parent="." unique_id=1286907700 instance=ExtResource("1_xil7t")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=265868365]
+position = Vector2(0, -64)
+shape = SubResource("RectangleShape2D_faqii")
+
+[node name="Polygon2D" type="Polygon2D" parent="." unique_id=1761142861]
+position = Vector2(0, 10)
+color = Color(1, 0, 0, 1)
+polygon = PackedVector2Array(0, -96, 32, -80, 0, -64)
+
+[node name="Polygon2D2" type="Polygon2D" parent="." unique_id=328823270]
+position = Vector2(0, 10)
+color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(0, -96, 0, -42, -3, -42, -3, -96)

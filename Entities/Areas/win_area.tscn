@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://cljcrrxbpw8og"]
+
+[ext_resource type="PackedScene" uid="uid://dro7g0ssis4o2" path="res://Entities/Block.tscn" id="1_faqii"]
+[ext_resource type="Script" uid="uid://b7wadxux6r6so" path="res://Entities/Areas/win_area.gd" id="1_mhqd5"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_faqii"]
+size = Vector2(64, 64)
+
+[node name="WinArea" type="Area2D" unique_id=1885905531]
+collision_mask = 3
+script = ExtResource("1_mhqd5")
+
+[node name="Block" parent="." unique_id=1286907700 instance=ExtResource("1_faqii")]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=265868365]
+position = Vector2(0, -64)
+shape = SubResource("RectangleShape2D_faqii")
+
+[node name="Polygon2D" type="Polygon2D" parent="." unique_id=1761142861]
+position = Vector2(0, 10)
+color = Color(0, 1, 0, 1)
+polygon = PackedVector2Array(0, -96, 32, -80, 0, -64)
+
+[node name="Polygon2D2" type="Polygon2D" parent="." unique_id=328823270]
+position = Vector2(0, 10)
+color = Color(0, 0, 0, 1)
+polygon = PackedVector2Array(0, -96, 0, -42, -3, -42, -3, -96)
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
