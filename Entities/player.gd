@@ -1,118 +1,113 @@
 extends CharacterBody2D
 
-var player_id = 1
+## Identifier for multiplayer authority assignment.
+var player_id: int = 1
 
-# Higher top speed to match the 4.0x animation speed
-const SPEED = 450.0
-const JUMP_VELOCITY = -550.0
+const SPEED = 350.0
+const JUMP_VELOCITY = -700.0
 const WALL_JUMP_VELOCITY = Vector2(450.0, -500.0)
 const WALL_SLIDE_GRAVITY = 100.0
+const JUMP_CUT_RATIO = 0.5
+const COYOTE_TIME = 0.12 ## Time in seconds the player can jump after leaving a ledge
 
-# Momentum / Inertia Parameters
-const ACCELERATION = 3800.0      # How fast you reach top speed on ground
-const FRICTION = 3200.0          # How fast you slide to a stop on ground
-const AIR_ACCELERATION = 2000.0   # Control strength while airborne
-const AIR_FRICTION = 1000.0       # Air resistance (preserves jump momentum)
+const ACCELERATION = 6800.0
+const FRICTION = 6000.0
+const AIR_ACCELERATION = 6000.0
+const AIR_FRICTION = 6000.0
 
-# Track visual states to detect changes
+var coyote_timer: float = 0.0
 var current_anim: String = ""
 var current_flip: bool = false
 
-func _enter_tree():
+func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
 	player_id = int(name)
 
-func _ready():
+func _ready() -> void:
 	global_position = Vector2(32, 544)
-	# Set base sprite speed scale to match fast movement
 	%AnimatedSprite2D.speed_scale = 4.0
 
-func _physics_process(delta):
-	if is_multiplayer_authority():
-		if global_position.y > 700:
-			global_position = Vector2(32, 544)
+func _physics_process(delta: float) -> void:
+	if not is_multiplayer_authority():
+		return
 
-		var is_against_wall = is_on_wall_only()
-		var direction = Input.get_axis("ui_left", "ui_right")
+	if global_position.y > 700:
+		global_position = Vector2(32, 544)
 
-		# Check if player is pushing into a wall
-		var pushing_against_wall = false
-		if is_against_wall and direction != 0:
-			var wall_normal = get_wall_normal()
-			if (wall_normal.x > 0 and direction < 0) or (wall_normal.x < 0 and direction > 0):
-				pushing_against_wall = true
+	var is_against_wall = is_on_wall_only()
+	var direction = Input.get_axis("ui_left", "ui_right")
 
-		# Gravity & Wall Sliding
-		if not is_on_floor():
-			if is_against_wall and pushing_against_wall and velocity.y >= 0:
-				velocity.y += WALL_SLIDE_GRAVITY * delta
-			else:
-				velocity.y += get_gravity().y * delta
+	# Update coyote timer
+	if is_on_floor():
+		coyote_timer = COYOTE_TIME
+	else:
+		coyote_timer = max(0.0, coyote_timer - delta)
 
-		# Jump & Wall Jump
-		if Input.is_action_just_pressed("ui_accept"):
-			if is_on_floor():
-				velocity.y = JUMP_VELOCITY
-			elif is_against_wall:
-				var wall_normal = get_wall_normal()
-				velocity.x = wall_normal.x * WALL_JUMP_VELOCITY.x
-				velocity.y = WALL_JUMP_VELOCITY.y
+	var pushing_against_wall = false
+	if is_against_wall and direction != 0:
+		var wall_normal = get_wall_normal()
+		pushing_against_wall = (wall_normal.x > 0 and direction < 0) or (wall_normal.x < 0 and direction > 0)
 
-		# --- Inertia & Acceleration Logic ---
-		var target_speed = direction * SPEED
-		if is_against_wall and pushing_against_wall:
-			target_speed *= 0.4 # Reduced max speed grinding against a wall
-
-		# Select acceleration/deceleration rates based on ground vs air
-		var accel = ACCELERATION if is_on_floor() else AIR_ACCELERATION
-		var decel = FRICTION if is_on_floor() else AIR_FRICTION
-
-		if direction != 0:
-			# Smoothly ramp up velocity toward target speed
-			velocity.x = move_toward(velocity.x, target_speed, accel * delta)
+	# Gravity & Wall Sliding
+	if not is_on_floor():
+		if is_against_wall and pushing_against_wall and velocity.y >= 0:
+			velocity.y += WALL_SLIDE_GRAVITY * delta
 		else:
-			# Smoothly bleed off velocity (sliding/coasting stop)
-			velocity.x = move_toward(velocity.x, 0, decel * delta)
+			velocity.y += get_gravity().y * 2.0 * delta
 
-		move_and_slide()
-		
-		# Check and broadcast animation changes
-		_update_and_sync_animations()
+	# Jump & Wall Jump
+	if Input.is_action_just_pressed("ui_up"):
+		if coyote_timer > 0.0:
+			velocity.y = JUMP_VELOCITY
+			coyote_timer = 0.0
+		elif is_against_wall:
+			var wall_normal = get_wall_normal()
+			velocity.x = wall_normal.x * WALL_JUMP_VELOCITY.x
+			velocity.y = WALL_JUMP_VELOCITY.y
 
-# --- Animation & Networking Sync ---
+	# Partial Jump (Variable Jump Height)
+	if Input.is_action_just_released("ui_up") and velocity.y < 0.0:
+		velocity.y *= JUMP_CUT_RATIO
+
+	# Inertia & Movement
+	var target_speed = direction * SPEED
+	if is_against_wall and pushing_against_wall:
+		target_speed *= 0.4
+
+	var accel = ACCELERATION if is_on_floor() else AIR_ACCELERATION
+	var decel = FRICTION if is_on_floor() else AIR_FRICTION
+
+	if direction != 0:
+		velocity.x = move_toward(velocity.x, target_speed, accel * delta)
+	else:
+		velocity.x = move_toward(velocity.x, 0, decel * delta)
+
+	move_and_slide()
+	_update_and_sync_animations()
 
 func _update_and_sync_animations() -> void:
-	# Determine flip direction based on actual movement velocity
 	var new_flip = current_flip
 	if velocity.x > 10.0:
 		new_flip = false
 	elif velocity.x < -10.0:
 		new_flip = true
 
-	# Determine animation state
 	var new_anim = "idle"
 	if not is_on_floor():
 		if velocity.y < 0:
 			new_anim = "jump"
 		else:
-			if %AnimatedSprite2D.animation == "fall" and %AnimatedSprite2D.is_playing():
-				new_anim = "fall"
-			else:
-				new_anim = "fall_loop"
+			new_anim = "fall" if %AnimatedSprite2D.animation == "fall" and %AnimatedSprite2D.is_playing() else "fall_loop"
 	else:
-		if abs(velocity.x) > 20.0:
-			new_anim = "run"
-		else:
-			new_anim = "idle"
+		new_anim = "run" if abs(velocity.x) > 20.0 else "idle"
 
-	# Only send RPC if animation state or flip direction actually changed
 	if new_anim != current_anim or new_flip != current_flip:
 		current_anim = new_anim
 		current_flip = new_flip
-		
 		_apply_visuals(current_anim, current_flip)
 		sync_visuals.rpc(current_anim, current_flip)
 
+## Updates sprite properties locally for remote peers.
 @rpc("authority", "call_remote", "reliable")
 func sync_visuals(anim_name: String, flip: bool) -> void:
 	_apply_visuals(anim_name, flip)
