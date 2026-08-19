@@ -39,6 +39,8 @@ func on_player_finished(player_id):
 	if round_won:
 		return
 	
+	round_won = true
+	
 	print("PLAYER " + str(player_id) + " WON!" )
 	game_over.rpc(player_id)
 	for p_id in PlayerData.players.keys():
