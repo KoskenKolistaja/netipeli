@@ -234,6 +234,7 @@ text = "PELAAJA 1 VOITTI!"
 layout_mode = 2
 
 [node name="ReadyButton" type="Button" parent="CanvasLayer/GameOverScreen/VBoxContainer" unique_id=1120797997]
+unique_name_in_owner = true
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
 size_flags_horizontal = 4

@@ -52,6 +52,7 @@ func on_player_finished(player_id):
 @rpc("authority","reliable","call_local")
 func game_over(player_id):
 	%GameOverScreen.show()
+	%ReadyButton.grab_focus()
 	%ReadyCheckBox.set_pressed_no_signal(false)
 	%WinnerTextLabel.text = PlayerData.players[player_id] + " won the round"
 
