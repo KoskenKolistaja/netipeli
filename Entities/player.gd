@@ -19,6 +19,8 @@ var coyote_timer: float = 0.0
 var current_anim: String = ""
 var current_flip: bool = false
 
+var inactive = true
+
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
 	player_id = int(name)
@@ -26,9 +28,11 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	global_position = Vector2(32, 544)
 	%AnimatedSprite2D.speed_scale = 4.0
+	await get_tree().create_timer(1.0).timeout
+	inactive = false
 
 func _physics_process(delta: float) -> void:
-	if not is_multiplayer_authority():
+	if not is_multiplayer_authority() or inactive:
 		return
 
 	if global_position.y > 700:
