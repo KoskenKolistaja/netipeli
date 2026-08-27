@@ -22,6 +22,10 @@ var round_won = false
 func _ready():
 	%WinArea.player_finished.connect(on_player_finished)
 	
+	for key in PlayerData.players.keys():
+		MetaData.win_statistics[key] = 0
+	
+	
 	if not multiplayer.is_server():
 		await get_tree().create_timer(0.1).timeout
 		confirm_player.rpc_id(1,multiplayer.get_unique_id())
@@ -34,12 +38,17 @@ func _ready():
 			else:
 				players_to_confirm.append(key)
 	
+	set_scores()
 
 func on_player_finished(player_id):
 	if round_won:
 		return
 	
 	round_won = true
+	
+	
+	MetaData.player_won(player_id)
+	
 	
 	print("PLAYER " + str(player_id) + " WON!" )
 	game_over.rpc(player_id)
@@ -55,6 +64,30 @@ func game_over(player_id):
 	%ReadyButton.grab_focus()
 	%ReadyCheckBox.set_pressed_no_signal(false)
 	%WinnerTextLabel.text = PlayerData.players[player_id] + " won the round"
+	
+	set_scores()
+
+func set_scores():
+	var scores = MetaData.win_statistics
+	var lines: Array[String] = []
+
+	# Sort by wins, highest first
+	var sorted_scores = scores.keys()
+	sorted_scores.sort_custom(func(a, b):
+		return scores[a] > scores[b]
+	)
+
+	for player_id in sorted_scores:
+		var player_name = PlayerData.players[player_id]
+		var wins = scores[player_id]
+		lines.append("%s — %d %s" % [
+			player_name,
+			wins,
+			"win" if wins == 1 else "wins"
+		])
+
+	%ScoreLabel.text = "\n".join(lines)
+
 
 
 @rpc("any_peer","reliable","call_local")

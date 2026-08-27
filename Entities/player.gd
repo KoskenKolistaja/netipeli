@@ -23,12 +23,14 @@ var inactive = true
 
 func _enter_tree() -> void:
 	set_multiplayer_authority(int(name))
+	global_position = Vector2(32, 544)
 	player_id = int(name)
 
 func _ready() -> void:
 	global_position = Vector2(32, 544)
 	%AnimatedSprite2D.speed_scale = 4.0
 	await get_tree().create_timer(1.0).timeout
+	global_position = Vector2(32, 544)
 	inactive = false
 
 func _physics_process(delta: float) -> void:

@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 PlayerData="*uid://dp541xw7u7g6b"
+MetaData="*uid://ch1gjio54qi3n"
 
 [display]
 
