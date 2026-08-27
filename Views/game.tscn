@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://cljcrrxbpw8og" path="res://Entities/Areas/win_area.tscn" id="4_qloo4"]
 [ext_resource type="Texture2D" uid="uid://rkb8i5l5cbpx" path="res://Assets/Dungeon Tile Set/Dungeon Tile Set.png" id="4_xht1e"]
 [ext_resource type="PackedScene" uid="uid://2pv3pymihosu" path="res://Entities/torch.tscn" id="7_yltma"]
+[ext_resource type="AudioStream" uid="uid://btgp3g0pm2i24" path="res://Assets/Music/Theme 1.ogg" id="8_wr33g"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_yltma"]
 texture = ExtResource("4_xht1e")
@@ -279,5 +280,10 @@ unique_name_in_owner = true
 layout_mode = 0
 offset_right = 300.0
 offset_bottom = 200.0
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=914048057]
+unique_name_in_owner = true
+stream = ExtResource("8_wr33g")
+autoplay = true
 
 [connection signal="pressed" from="CanvasLayer/GameOverScreen/VBoxContainer/ReadyButton" to="." method="_on_ready_button_pressed"]

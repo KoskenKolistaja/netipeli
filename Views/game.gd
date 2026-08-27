@@ -26,10 +26,12 @@ func _ready():
 		MetaData.win_statistics[key] = 0
 	
 	
+	
 	if not multiplayer.is_server():
 		await get_tree().create_timer(0.1).timeout
 		confirm_player.rpc_id(1,multiplayer.get_unique_id())
 	else:
+		#%AudioStreamPlayer.play()
 		print("PLAYERS TO CONFIRM: " + str(players_to_confirm))
 		for key in PlayerData.players.keys():
 			players_to_spawn.append(key)

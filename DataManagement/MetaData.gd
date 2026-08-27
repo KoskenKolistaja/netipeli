@@ -6,6 +6,8 @@ extends Node
 
 var win_statistics = {}
 
+var player_coins = {}
+
 
 
 
