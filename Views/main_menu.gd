@@ -41,7 +41,7 @@ func _on_host_button_pressed() -> void:
 	
 	# Register host (ID 1) in both local dictionary and PlayerData singleton
 	PlayerData.clear_players()
-	PlayerData.add_player(1, PlayerData.player_name)
+	PlayerData.add_player(1, PlayerData.player_name, %ColorPicker.color)
 	players[1] = PlayerData.player_name
 	_update_player_list_ui()
 	%PlayButton.show()

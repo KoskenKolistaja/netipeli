@@ -86,6 +86,22 @@ text = "Start Game"
 layout_mode = 2
 size_flags_horizontal = 3
 
+[node name="ColorPicker" type="ColorPicker" parent="." unique_id=43687341]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 962.0
+offset_top = 497.0
+offset_right = 1132.0
+offset_bottom = 633.0
+theme_override_constants/sv_width = 128
+theme_override_constants/sv_height = 128
+color_mode = 1
+sampler_visible = false
+color_modes_visible = false
+sliders_visible = false
+hex_visible = false
+presets_visible = false
+
 [connection signal="pressed" from="HBoxContainer/VBoxContainer/HostButton" to="." method="_on_host_button_pressed"]
 [connection signal="pressed" from="HBoxContainer/VBoxContainer/JoinButton" to="." method="_on_join_button_pressed"]
 [connection signal="pressed" from="HBoxContainer/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]
