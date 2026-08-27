@@ -32,6 +32,8 @@ func _ready() -> void:
 	await get_tree().create_timer(1.0).timeout
 	global_position = Vector2(32, 544)
 	inactive = false
+	
+	%AnimatedSprite2D.self_modulate = PlayerData.player_colors[player_id]
 
 func _physics_process(delta: float) -> void:
 	if not is_multiplayer_authority() or inactive:
