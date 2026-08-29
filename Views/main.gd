@@ -5,12 +5,14 @@ extends Node
 
 
 
+
 func start_game():
 	if not multiplayer.is_server():
 		return
 	
 	start_game_for_clients.rpc()
-
+	
+	sync_player_colors.rpc(PlayerData.player_colors)
 
 
 
@@ -20,3 +22,8 @@ func start_game_for_clients():
 		if c is MainMenu:
 			c.queue_free()
 	add_child(game_scene.instantiate())
+
+
+@rpc("authority","reliable")
+func sync_player_colors(new_colors):
+	PlayerData.update_colors(new_colors)

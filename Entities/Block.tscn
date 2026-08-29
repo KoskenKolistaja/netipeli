@@ -147,15 +147,18 @@ sources/0 = SubResource("TileSetAtlasSource_chcbf")
 
 [node name="Block" type="StaticBody2D" unique_id=1286907700]
 script = ExtResource("1_461ul")
+can_spawn = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=723929063]
 shape = SubResource("RectangleShape2D_i5lgx")
 
 [node name="TileMap" type="TileMap" parent="." unique_id=574847406]
+z_index = 1
 texture_filter = 1
 tile_set = SubResource("TileSet_b8mbp")
 format = 2
 layer_0/tile_data = PackedInt32Array(-65538, 65536, 1, -2, 65536, 2, 65534, 65536, 2, -65537, 131072, 1, -1, 131072, 2, 65535, 131072, 2, -131072, 131072, 1, -65536, 131072, 2, 0, 131072, 2, -131071, 196608, 1, -65535, 196608, 2, 1, 196608, 2, 65537, 196608, 3, 65536, 131072, 3, 131070, 65536, 3, 131071, 131072, 3)
 
 [node name="ItemContainer" type="Node2D" parent="." unique_id=317501615]
+unique_name_in_owner = true
 position = Vector2(0, -56)

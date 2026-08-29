@@ -11,9 +11,9 @@ const JUMP_CUT_RATIO = 0.5
 const COYOTE_TIME = 0.12 ## Time in seconds the player can jump after leaving a ledge
 
 const ACCELERATION = 6800.0
-const FRICTION = 6000.0
+const FRICTION = 4000.0
 const AIR_ACCELERATION = 6000.0
-const AIR_FRICTION = 6000.0
+const AIR_FRICTION = 4000.0
 
 var coyote_timer: float = 0.0
 var current_anim: String = ""
@@ -29,19 +29,26 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	global_position = Vector2(32, 544)
 	%AnimatedSprite2D.speed_scale = 4.0
+	%AnimatedSprite2D.self_modulate = PlayerData.player_colors[player_id]
 	await get_tree().create_timer(1.0).timeout
 	global_position = Vector2(32, 544)
 	inactive = false
 	
-	%AnimatedSprite2D.self_modulate = PlayerData.player_colors[player_id]
 
 func _physics_process(delta: float) -> void:
+	if global_position.y > 700:
+		if multiplayer.is_server():
+			var game = get_tree().get_first_node_in_group("game")
+			game.player_died(player_id)
 	if not is_multiplayer_authority() or inactive:
 		return
-
 	if global_position.y > 700:
-		global_position = Vector2(32, 544)
-
+		inactive = true
+	
+	
+	if Input.is_action_just_pressed("dash"):
+		dash()
+	
 	var is_against_wall = is_on_wall_only()
 	var direction = Input.get_axis("ui_left", "ui_right")
 
@@ -124,3 +131,12 @@ func _apply_visuals(anim_name: String, flip: bool) -> void:
 	%AnimatedSprite2D.flip_h = flip
 	if %AnimatedSprite2D.animation != anim_name:
 		%AnimatedSprite2D.play(anim_name)
+
+
+func dash():
+	var dash_price : int = 2
+	
+	if MetaData.has_amount_of_coins(dash_price,player_id):
+		MetaData.pre_change_coin(-dash_price,player_id)
+		MetaData.request_change_coin.rpc_id(1,-dash_price,player_id)
+		velocity.y = JUMP_VELOCITY

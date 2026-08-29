@@ -1,0 +1,107 @@
+[gd_scene format=3 uid="uid://hj2nh5c0bed3"]
+
+[ext_resource type="Script" uid="uid://d0qsvhs8xfulm" path="res://Views/main_menu.gd" id="1_i7pk0"]
+
+[node name="MainMenu" type="Control" unique_id=297593007]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_i7pk0")
+
+[node name="HBoxContainer" type="HBoxContainer" parent="." unique_id=1867827751]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer" unique_id=2044844377]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="HBoxContainer/MarginContainer" unique_id=1249866133]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="StatusLabel" type="Label" parent="HBoxContainer/MarginContainer/VBoxContainer2" unique_id=228240698]
+unique_name_in_owner = true
+layout_mode = 2
+text = "STATUS LABEL"
+
+[node name="HSeparator" type="HSeparator" parent="HBoxContainer/MarginContainer/VBoxContainer2" unique_id=536066194]
+layout_mode = 2
+theme_override_constants/separation = 5
+
+[node name="PlayerListLabel" type="Label" parent="HBoxContainer/MarginContainer/VBoxContainer2" unique_id=1881561006]
+unique_name_in_owner = true
+layout_mode = 2
+text = "PLAYER LIST LABEL"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer" unique_id=826839321]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="IPEdit" type="LineEdit" parent="HBoxContainer/VBoxContainer" unique_id=1352236316]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+placeholder_text = "<insert ip here>"
+alignment = 1
+
+[node name="NameEdit" type="LineEdit" parent="HBoxContainer/VBoxContainer" unique_id=1047631049]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 2
+placeholder_text = "<player name>"
+alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="HBoxContainer/VBoxContainer" unique_id=783468758]
+layout_mode = 2
+
+[node name="HostButton" type="Button" parent="HBoxContainer/VBoxContainer" unique_id=415684104]
+layout_mode = 2
+text = "Host"
+
+[node name="JoinButton" type="Button" parent="HBoxContainer/VBoxContainer" unique_id=902437041]
+layout_mode = 2
+text = "Join"
+
+[node name="PlayButton" type="Button" parent="HBoxContainer/VBoxContainer" unique_id=1885309288]
+unique_name_in_owner = true
+visible = false
+layout_mode = 2
+text = "Start Game"
+
+[node name="VBoxContainer3" type="VBoxContainer" parent="HBoxContainer" unique_id=726384410]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ColorPicker" type="ColorPicker" parent="." unique_id=43687341]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 962.0
+offset_top = 497.0
+offset_right = 1132.0
+offset_bottom = 633.0
+theme_override_constants/sv_width = 128
+theme_override_constants/sv_height = 128
+color_mode = 1
+sampler_visible = false
+color_modes_visible = false
+sliders_visible = false
+hex_visible = false
+presets_visible = false
+
+[connection signal="pressed" from="HBoxContainer/VBoxContainer/HostButton" to="." method="_on_host_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/VBoxContainer/JoinButton" to="." method="_on_join_button_pressed"]
+[connection signal="pressed" from="HBoxContainer/VBoxContainer/PlayButton" to="." method="_on_play_button_pressed"]

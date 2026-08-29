@@ -2,10 +2,14 @@ extends Node2D
 
 #17,9
 
+signal skips_changed(skips)
+
 var block_index = 0
 
 @export var block_scene : PackedScene
 @export var player_scene : PackedScene
+
+@export var player_panel_scene : PackedScene
 
 var block_list : Array = []
 
@@ -17,13 +21,19 @@ var players_to_spawn = []
 
 var players_ready = []
 
-var round_won = false
+var round_over = false
+
+var skips = []
+
+var alive_players = []
 
 func _ready():
 	%WinArea.player_finished.connect(on_player_finished)
 	
 	for key in PlayerData.players.keys():
 		MetaData.win_statistics[key] = 0
+		MetaData.player_coins[key] = 0
+		spawn_player_panel(key)
 	
 	
 	
@@ -31,7 +41,7 @@ func _ready():
 		await get_tree().create_timer(0.1).timeout
 		confirm_player.rpc_id(1,multiplayer.get_unique_id())
 	else:
-		#%AudioStreamPlayer.play()
+		%AudioStreamPlayer.play()
 		print("PLAYERS TO CONFIRM: " + str(players_to_confirm))
 		for key in PlayerData.players.keys():
 			players_to_spawn.append(key)
@@ -40,14 +50,43 @@ func _ready():
 			else:
 				players_to_confirm.append(key)
 	
-	set_scores()
+	#set_scores()
+
+
+func _process(delta):
+	if Input.is_action_just_pressed("skip"):
+		skip.rpc_id(1,multiplayer.get_unique_id())
+
+func _physics_process(delta):
+	%TimeLabel.text = str(snappedi(%Timer.time_left,1))
+
+
+func spawn_player_panel(player_id):
+	var panel_instance : PlayerPanel = player_panel_scene.instantiate()
+	panel_instance.player_id = player_id
+	%PlayerPanelContainer.add_child(panel_instance)
+
+
+@rpc("any_peer","reliable","call_local")
+func skip(player_id):
+	if skips.has(player_id):
+		skips.erase(player_id)
+	if skips.is_empty():
+		skip_round()
+	sync_skips.rpc(skips)
+
+@rpc("authority","reliable","call_local")
+func sync_skips(new_skips):
+	skips = new_skips
+	skips_changed.emit(skips)
+
 
 func on_player_finished(player_id):
-	if round_won:
+	if round_over:
 		return
 	
-	round_won = true
-	
+	round_over = true
+	MetaData.request_change_coin.rpc_id(1,1,player_id)
 	
 	MetaData.player_won(player_id)
 	
@@ -59,15 +98,54 @@ func on_player_finished(player_id):
 	
 	for p_id in PlayerData.players.keys():
 		players_to_confirm.append(p_id)
+	
+	var winning_text : String = "+1 🪙 for finishing 1st \n"
+	add_winning_text.rpc_id(player_id,winning_text)
+
+@rpc("authority","reliable","call_local")
+func add_winning_text(exp_text : String):
+	%CoinLabel.text += exp_text
+
+
+
+func skip_round():
+	if round_over:
+		return
+	round_over = true
+	
+	for p_id in PlayerData.players.keys():
+		players_ready.append(p_id)
+	for p_id in PlayerData.players.keys():
+		players_to_confirm.append(p_id)
+	
+	game_over.rpc(null)
 
 @rpc("authority","reliable","call_local")
 func game_over(player_id):
+	if multiplayer.is_server():
+		delete_items()
+		
+		for p in alive_players:
+			MetaData.player_change_coin(1,p)
+			add_winning_text.rpc_id(p,"+1 🪙 for surviving the round \n")
+	%TimeLabel.text = str(snappedi(0,1))
+	%Timer.stop()
 	%GameOverScreen.show()
 	%ReadyButton.grab_focus()
 	%ReadyCheckBox.set_pressed_no_signal(false)
-	%WinnerTextLabel.text = PlayerData.players[player_id] + " won the round"
+	%WinnerTextLabel.text = "No Winner"
+	if player_id:
+		%WinnerTextLabel.text = PlayerData.players[player_id] + " won the round"
 	
-	set_scores()
+	#set_scores()
+
+
+
+
+func delete_items():
+	for i in get_tree().get_nodes_in_group("item"):
+		i.queue_free()
+
 
 func set_scores():
 	var scores = MetaData.win_statistics
@@ -99,18 +177,28 @@ func confirm_player(player_id):
 	if players_to_confirm.is_empty():
 		initiate_game()
 
+func player_died(player_id):
+	alive_players.erase(player_id)
+	skip(player_id)
 
 func initiate_game():
-	round_won = false
+
+	round_over = false
 	var blocks = get_random_blocks()
 	setup_round.rpc(blocks)
 	
+	skips.clear()
+	skips = PlayerData.players.keys()
+	alive_players.clear()
+	alive_players = PlayerData.players.keys()
 	
 	for id in players_to_spawn:
 		var player_instance = player_scene.instantiate()
 		player_instance.name = str(id)
 		%PlayerContainer.add_child(player_instance,true)
 		player_instance.global_position = Vector2(32,480)
+	
+
 
 func get_random_blocks():
 	var new_blocks = [] 
@@ -123,6 +211,13 @@ func get_random_blocks():
 @rpc("authority","reliable","call_local")
 func setup_round(new_block_list):
 	%GameOverScreen.hide()
+	%CoinLabel.text = ""
+	
+	for c in %PlayerPanelContainer.get_children():
+		if c is PlayerPanel:
+			c.reset()
+	
+	
 	for new_block_position : Vector2i in new_block_list:
 		var block_instance = block_scene.instantiate()
 		block_instance.global_position.x = origin_position.x + (new_block_position.x * 64)
@@ -130,7 +225,7 @@ func setup_round(new_block_list):
 		block_instance.name = str(block_index)
 		block_index += 1
 		%BlockContainer.add_child(block_instance,true)
-
+	%Timer.start()
 
 func _on_ready_button_pressed():
 	player_ready.rpc_id(1,multiplayer.get_unique_id())
@@ -152,3 +247,8 @@ func clear_level():
 			c.queue_free()
 		
 		confirm_player.rpc_id(1,multiplayer.get_unique_id())
+
+
+func _on_timer_timeout():
+	if multiplayer.is_server():
+		skip_round()

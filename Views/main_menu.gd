@@ -68,7 +68,7 @@ func _save_player_name() -> void:
 	var entered_name: String = %NameEdit.text.strip_edges()
 	
 	if entered_name.is_empty():
-		entered_name = "Player_%d" % randi_range(1000, 9999)
+		entered_name = "Player_%d" % randi_range(10, 99)
 		%NameEdit.text = entered_name
 	
 	PlayerData.player_name = entered_name
@@ -108,7 +108,7 @@ func register_player(new_name: String) -> void:
 		sender_id = multiplayer.get_unique_id()
 		
 	players[sender_id] = new_name
-	PlayerData.add_player(sender_id, new_name)
+	PlayerData.add_player(sender_id, new_name,%ColorPicker.color)
 	
 	# Server broadcasts full updated dictionary to all clients
 	if multiplayer.is_server():
@@ -144,3 +144,11 @@ func _on_play_button_pressed() -> void:
 
 func start_game() -> void:
 	get_parent().start_game()
+
+
+func _on_color_picker_color_changed(color):
+	send_color.rpc_id(1,multiplayer.get_unique_id(),color)
+
+@rpc("any_peer","reliable","call_local")
+func send_color(player_id,color):
+	PlayerData.player_colors[player_id] = color

@@ -1,0 +1,61 @@
+[gd_scene format=3 uid="uid://bhy6sc3s410lj"]
+
+[ext_resource type="Script" uid="uid://d2qun57txt3ge" path="res://UI/PlayerPanel/player_panel.gd" id="1_cgag7"]
+[ext_resource type="Texture2D" uid="uid://cxqx1etyenio" path="res://Assets/PlayerIcon.png" id="1_u0e3p"]
+
+[node name="PlayerPanel" type="Panel" unique_id=464329067]
+custom_minimum_size = Vector2(175, 50)
+script = ExtResource("1_cgag7")
+
+[node name="MarginContainer" type="MarginContainer" parent="." unique_id=126166105]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer" unique_id=37494940]
+layout_mode = 2
+
+[node name="PlayerIcon" type="TextureRect" parent="MarginContainer/HBoxContainer" unique_id=204072785]
+unique_name_in_owner = true
+texture_filter = 1
+layout_mode = 2
+texture = ExtResource("1_u0e3p")
+expand_mode = 2
+stretch_mode = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer" unique_id=436538170]
+layout_mode = 2
+theme_override_constants/separation = 0
+alignment = 2
+
+[node name="PlayerNameLabel" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=1664764969]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(90, 0)
+layout_mode = 2
+size_flags_vertical = 3
+text = "Pelle"
+vertical_alignment = 2
+autowrap_mode = 2
+
+[node name="SkipLabel" type="Label" parent="MarginContainer/HBoxContainer/VBoxContainer" unique_id=2048705369]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(70, 0)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_font_sizes/font_size = 10
+text = "Skip"
+autowrap_mode = 2
+
+[node name="PlayerScoreLabel" type="Label" parent="MarginContainer/HBoxContainer" unique_id=1134427213]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(20, 0)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "0"

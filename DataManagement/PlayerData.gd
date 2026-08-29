@@ -8,11 +8,17 @@ var players: Dictionary = {}
 
 var player_colors = {}
 
+signal colors_updated(colors)
 
 ## Adds or updates a player in the session dictionary
 func add_player(id: int, name: String, color: Color) -> void:
 	players[id] = name
 	player_colors[id] = color
+
+
+func update_colors(new_colors):
+	player_colors = new_colors
+	colors_updated.emit(player_colors)
 
 ## Removes a player when they disconnect
 func remove_player(id: int) -> void:

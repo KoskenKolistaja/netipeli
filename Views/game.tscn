@@ -6,10 +6,15 @@
 [ext_resource type="PackedScene" uid="uid://dlsb2qmfi4qa" path="res://Entities/Areas/start_area.tscn" id="3_788f6"]
 [ext_resource type="PackedScene" uid="uid://cljcrrxbpw8og" path="res://Entities/Areas/win_area.tscn" id="4_qloo4"]
 [ext_resource type="Texture2D" uid="uid://rkb8i5l5cbpx" path="res://Assets/Dungeon Tile Set/Dungeon Tile Set.png" id="4_xht1e"]
+[ext_resource type="Script" uid="uid://btlkvrbkrw8e" path="res://Views/item_spawner.gd" id="7_rixkv"]
 [ext_resource type="PackedScene" uid="uid://2pv3pymihosu" path="res://Entities/torch.tscn" id="7_yltma"]
+[ext_resource type="PackedScene" uid="uid://cd118frmplrt4" path="res://Entities/Coin/coin.tscn" id="8_6o13s"]
 [ext_resource type="AudioStream" uid="uid://btgp3g0pm2i24" path="res://Assets/Music/Theme 1.ogg" id="8_wr33g"]
+[ext_resource type="Script" uid="uid://bw0uhy24prx78" path="res://Views/hud.gd" id="9_hp3l2"]
+[ext_resource type="Texture2D" uid="uid://do0fnv3hswt03" path="res://Assets/Coin.png" id="9_pqf46"]
+[ext_resource type="PackedScene" uid="uid://bhy6sc3s410lj" path="res://UI/PlayerPanel/player_panel.tscn" id="12_jd0x4"]
 
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_yltma"]
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_6o13s"]
 texture = ExtResource("4_xht1e")
 1:1/0 = 0
 2:1/0 = 0
@@ -146,12 +151,13 @@ texture = ExtResource("4_xht1e")
 12:15/0 = 0
 
 [sub_resource type="TileSet" id="TileSet_wr33g"]
-sources/0 = SubResource("TileSetAtlasSource_yltma")
+sources/0 = SubResource("TileSetAtlasSource_6o13s")
 
-[node name="Game" type="Node2D" unique_id=434226425]
+[node name="Game" type="Node2D" unique_id=434226425 groups=["game"]]
 script = ExtResource("1_ia7b4")
 block_scene = ExtResource("1_bnuu0")
 player_scene = ExtResource("2_cwp8b")
+player_panel_scene = ExtResource("12_jd0x4")
 
 [node name="TileMap" type="TileMap" parent="." unique_id=1725754650]
 texture_filter = 1
@@ -168,25 +174,33 @@ position = Vector2(32, 608)
 unique_name_in_owner = true
 position = Vector2(1120, 96)
 
-[node name="MultiplayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1699881676]
+[node name="BlockSpawner" type="MultiplayerSpawner" parent="." unique_id=1699881676]
 _spawnable_scenes = PackedStringArray("uid://dro7g0ssis4o2")
 spawn_path = NodePath("BlockContainer")
 
-[node name="BlockContainer" type="Node2D" parent="MultiplayerSpawner" unique_id=1050074107]
+[node name="BlockContainer" type="Node2D" parent="BlockSpawner" unique_id=1050074107]
 unique_name_in_owner = true
 
-[node name="MultiplayerSpawner2" type="MultiplayerSpawner" parent="." unique_id=1288297021]
+[node name="PlayerSpawner" type="MultiplayerSpawner" parent="." unique_id=1288297021]
 _spawnable_scenes = PackedStringArray("uid://epx22b3huk3f")
 spawn_path = NodePath("PlayerContainer")
 
-[node name="PlayerContainer" type="Node2D" parent="MultiplayerSpawner2" unique_id=418240832]
+[node name="PlayerContainer" type="Node2D" parent="PlayerSpawner" unique_id=418240832]
+unique_name_in_owner = true
+
+[node name="ItemSpawner" type="MultiplayerSpawner" parent="." unique_id=1499475385 groups=["item_spawner"]]
+_spawnable_scenes = PackedStringArray("uid://cd118frmplrt4")
+spawn_path = NodePath("ItemContainer")
+script = ExtResource("7_rixkv")
+coin = ExtResource("8_6o13s")
+
+[node name="ItemContainer" type="Node2D" parent="ItemSpawner" unique_id=631822915]
 unique_name_in_owner = true
 
 [node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=262710401]
 
 [node name="GameOverScreen" type="Control" parent="CanvasLayer" unique_id=1725471662]
 unique_name_in_owner = true
-visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -210,6 +224,20 @@ theme_override_constants/margin_bottom = 200
 
 [node name="Panel" type="Panel" parent="CanvasLayer/GameOverScreen/MarginContainer" unique_id=1913845739]
 layout_mode = 2
+
+[node name="CoinLabel" type="Label" parent="CanvasLayer/GameOverScreen/MarginContainer/Panel" unique_id=521352533]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 20.0
+offset_top = -68.0
+offset_right = 247.0
+offset_bottom = -19.0
+grow_vertical = 0
+text = "+1🪙 for finishing 1st
++1🪙  for surviving the round"
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/GameOverScreen" unique_id=1915301133]
 layout_mode = 1
@@ -264,9 +292,9 @@ position = Vector2(544, 472)
 [node name="Torch5" parent="." unique_id=417737035 instance=ExtResource("7_yltma")]
 position = Vector2(983, 216)
 
-[node name="CanvasLayer2" type="CanvasLayer" parent="." unique_id=1722580303]
+[node name="CanvasLayerHud" type="CanvasLayer" parent="." unique_id=1722580303]
 
-[node name="Control" type="Control" parent="CanvasLayer2" unique_id=182097101]
+[node name="HUD" type="Control" parent="CanvasLayerHud" unique_id=182097101]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -274,16 +302,72 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+script = ExtResource("9_hp3l2")
 
-[node name="ScoreLabel" type="Label" parent="CanvasLayer2/Control" unique_id=1948643675]
+[node name="ScoreLabel" type="Label" parent="CanvasLayerHud/HUD" unique_id=1948643675]
 unique_name_in_owner = true
 layout_mode = 0
 offset_right = 300.0
 offset_bottom = 200.0
 
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayerHud/HUD" unique_id=15736989]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -120.0
+offset_top = -80.0
+offset_right = -38.0
+offset_bottom = -29.0
+grow_horizontal = 0
+grow_vertical = 0
+theme_override_constants/separation = 10
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayerHud/HUD/HBoxContainer" unique_id=2075132260]
+texture_filter = 1
+layout_mode = 2
+texture = ExtResource("9_pqf46")
+expand_mode = 2
+
+[node name="CoinAmount" type="Label" parent="CanvasLayerHud/HUD/HBoxContainer" unique_id=1646073672]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 37
+text = "0"
+
+[node name="TimeLabel" type="Label" parent="CanvasLayerHud/HUD" unique_id=2010547235]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -20.0
+offset_top = 10.0
+offset_right = 20.0
+offset_bottom = 46.0
+grow_horizontal = 2
+theme_override_font_sizes/font_size = 26
+text = "pelle"
+horizontal_alignment = 1
+
+[node name="PlayerPanelContainer" type="VBoxContainer" parent="CanvasLayerHud/HUD" unique_id=971369316]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 10.0
+offset_top = 30.0
+offset_right = 160.0
+offset_bottom = 80.0
+
 [node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=914048057]
 unique_name_in_owner = true
 stream = ExtResource("8_wr33g")
-autoplay = true
+
+[node name="Timer" type="Timer" parent="." unique_id=505502455]
+unique_name_in_owner = true
+wait_time = 60.0
+one_shot = true
 
 [connection signal="pressed" from="CanvasLayer/GameOverScreen/VBoxContainer/ReadyButton" to="." method="_on_ready_button_pressed"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

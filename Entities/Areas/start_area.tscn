@@ -8,6 +8,7 @@ size = Vector2(64, 64)
 [node name="StartArea" type="Area2D" unique_id=1885905531]
 
 [node name="Block" parent="." unique_id=1286907700 instance=ExtResource("1_xil7t")]
+can_spawn = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=265868365]
 position = Vector2(0, -64)
