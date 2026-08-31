@@ -1,5 +1,4 @@
 [gd_resource type="AudioBusLayout" format=3 uid="uid://dkjadat7psaxd"]
 
 [resource]
-bus/0/mute = true
-bus/0/volume_db = -27.460428
+bus/0/volume_db = -14.622803

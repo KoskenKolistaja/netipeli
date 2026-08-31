@@ -50,7 +50,7 @@ animations = [{
 }]
 
 [node name="Torch" type="Node2D" unique_id=1829736041]
-z_index = 2
+z_index = 1
 
 [node name="PointLight2D" type="PointLight2D" parent="." unique_id=805682727]
 position = Vector2(-1, 0)

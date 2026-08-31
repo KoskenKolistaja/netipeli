@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://bnp6848udsn07"]
+
+[ext_resource type="Script" uid="uid://dn7yx2ldeautj" path="res://Entities/Audio/audio.gd" id="1_lbo0x"]
+
+[node name="Audio" type="Node" unique_id=2053881369]
+script = ExtResource("1_lbo0x")
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="." unique_id=94598414]
+
+[node name="AudioStreamPlayer2" type="AudioStreamPlayer" parent="." unique_id=1633904779]
+
+[node name="AudioStreamPlayer3" type="AudioStreamPlayer" parent="." unique_id=1800034398]
+
+[node name="AudioStreamPlayer4" type="AudioStreamPlayer" parent="." unique_id=486977844]
+
+[node name="AudioStreamPlayer5" type="AudioStreamPlayer" parent="." unique_id=1481277020]
+
+[node name="AudioStreamPlayer6" type="AudioStreamPlayer" parent="." unique_id=62483049]
+
+[node name="AudioStreamPlayer7" type="AudioStreamPlayer" parent="." unique_id=1524126836]
+
+[node name="AudioStreamPlayer8" type="AudioStreamPlayer" parent="." unique_id=1306436096]
+
+[node name="AudioStreamPlayer9" type="AudioStreamPlayer" parent="." unique_id=2079499327]
+
+[node name="AudioStreamPlayer10" type="AudioStreamPlayer" parent="." unique_id=1155683672]

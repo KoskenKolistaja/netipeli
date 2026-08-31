@@ -1,5 +1,8 @@
 extends CharacterBody2D
 
+@export var jump_sound : AudioStream
+
+
 ## Identifier for multiplayer authority assignment.
 var player_id: int = 1
 
@@ -48,6 +51,9 @@ func _physics_process(delta: float) -> void:
 	
 	if Input.is_action_just_pressed("dash"):
 		dash()
+	
+	if Input.is_action_just_pressed("light"):
+		sync_light.rpc()
 	
 	var is_against_wall = is_on_wall_only()
 	var direction = Input.get_axis("ui_left", "ui_right")
@@ -140,3 +146,15 @@ func dash():
 		MetaData.pre_change_coin(-dash_price,player_id)
 		MetaData.request_change_coin.rpc_id(1,-dash_price,player_id)
 		velocity.y = JUMP_VELOCITY
+
+func light():
+	var light_price : int = 1
+	
+	if MetaData.has_amount_of_coins(light_price,player_id):
+		MetaData.pre_change_coin(-light_price,player_id)
+		MetaData.request_change_coin.rpc_id(1,-light_price,player_id)
+		sync_light.rpc()
+
+@rpc("authority","call_local","reliable")
+func sync_light():
+	%LightAnimations.play("light_up")

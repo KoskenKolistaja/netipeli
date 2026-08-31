@@ -182,7 +182,7 @@ func player_died(player_id):
 	skip(player_id)
 
 func initiate_game():
-
+	
 	round_over = false
 	var blocks = get_random_blocks()
 	setup_round.rpc(blocks)
@@ -198,7 +198,18 @@ func initiate_game():
 		%PlayerContainer.add_child(player_instance,true)
 		player_instance.global_position = Vector2(32,480)
 	
+	if randf_range(0,1) < 0.3:
+		darken.rpc()
+	else:
+		reset_lighting.rpc()
 
+@rpc("authority","reliable","call_local")
+func darken():
+	%LightAnimations.play("Darken")
+
+@rpc("authority","reliable","call_local")
+func reset_lighting():
+	%LightAnimations.play("RESET")
 
 func get_random_blocks():
 	var new_blocks = [] 
